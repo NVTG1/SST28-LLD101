@@ -110,6 +110,15 @@ class PrintStudentDetails {
             System.out.println("- " + e);
         }
     }
+
+    public void printTable(FakeDbInterface repo){
+
+        System.out.println("-- DB DUMP --");
+
+        FakeDb db = (FakeDb) repo;
+
+        System.out.print(TextTable.render3(db));
+    }
 }
 
 // OnboardingService
@@ -166,7 +175,6 @@ public class Demo01 {
         svc.registerFromRawInput(raw);
 
         System.out.println();
-        System.out.println("-- DB DUMP --");
-        System.out.print(TextTable.render3(db));
+        new PrintStudentDetails().printTable(db);
     }
 }
