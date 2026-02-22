@@ -6,9 +6,7 @@ abstract class Exporter {
     // implied "contract" but not enforced (smell)
     /* Contract: 
     -- request must not be null
-    -- Data can not have its meaning changed
-    -- Always a valid ExportResult object should be returned
-    -- No stricter demands must be allowed*/
+    -- Always a valid ExportResult object should be returned*/
 
     // Changed abstract to final so that contract cannot be changed
     public final ExportResult export(ExportRequest req){
