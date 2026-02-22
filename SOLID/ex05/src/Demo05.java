@@ -9,6 +9,7 @@ abstract class Exporter {
     -- Always a valid ExportResult object should be returned*/
 
     // Changed abstract to final so that contract cannot be changed
+    // So that client can safely call export() without knowing its subclasses
     public final ExportResult export(ExportRequest req){
         // request shouldn't be null
         if(req == null){
@@ -17,7 +18,8 @@ abstract class Exporter {
 
         return doesExport(req);
     }
-    // Subclasses will implement this
+    // Subclasses will implement this method only
+    // Converts ExportRequest to ExportResult.
     protected abstract ExportResult doesExport(ExportRequest req);
 }
 
@@ -46,13 +48,9 @@ class ExportResult {
 // CsvExporter
 class CsvExporter extends Exporter {
     @Override
-    protected ExportResult doesExport(ExportRequest req) {
-        // keep lossy behavior exactly same (Checkpoint D)
-        String body = req.body == null ? "" :
-                req.body.replace("\n", " ").replace(",", " ");
-
+    public ExportResult doesExport(ExportRequest req) {
+        String body = req.body == null ? "" : req.body.replace("\n", " ").replace(",", " ");
         String csv = "title,body\n" + req.title + "," + body + "\n";
-
         return new ExportResult("text/csv", csv.getBytes(StandardCharsets.UTF_8));
     }
 }
@@ -61,9 +59,7 @@ class CsvExporter extends Exporter {
 class JsonExporter extends Exporter {
     @Override
     public ExportResult doesExport(ExportRequest req) {
-        if (req == null) {
-            return new ExportResult("application/json", new byte[0]);
-        }
+        if (req == null) throw new IllegalArgumentException("ExportRequest cannot be null");
 
         String json = "{\"title\":\"" + escape(req.title) +
                       "\",\"body\":\"" + escape(req.body) + "\"}";
@@ -83,7 +79,6 @@ class PdfExporter extends Exporter {
 
     @Override
     protected ExportResult doesExport(ExportRequest req) {
-        // keep SAME behavior as original
         if (req.body != null && req.body.length() > 20) {
             throw new IllegalArgumentException("PDF cannot handle content > 20 chars");
         }
