@@ -13,15 +13,11 @@ class ConsolePreview {
 }
 
 // EmailSender
-class EmailSender implements NotificationSender {
-    private final AuditLog audit;
-
-    public EmailSender(AuditLog audit) {
-        this.audit = audit;
-    }
+class EmailSender extends NotificationSender {
+    public EmailSender(AuditLog audit) { super(audit); }
 
     @Override
-    public void send(Notification n) {
+    protected void doesSend(Notification n) {
         System.out.println("EMAIL -> to=" + n.email + " subject=" + n.subject + " body=" + n.body);
         audit.add("email sent");
     }
@@ -41,9 +37,20 @@ class Notification {
 
 
 // NotificationSender
-interface NotificationSender {
-    // Contract: No change in meaning when sending notification
-    void send(Notification n);
+abstract class NotificationSender {
+    protected final AuditLog audit;
+
+    protected NotificationSender(AuditLog audit) { this.audit = audit; }
+
+    // final method means a contract: 
+    // There will always be a notification
+    public final void send(Notification n) {
+        if (n == null) throw new IllegalArgumentException("Notification cannot be null");
+        doesSend(n); // subclasses implement only this
+    }
+
+    // This method will handle the specifications of each subclass
+    protected abstract void doesSend(Notification n); 
 }
 
 // SenderConfig
@@ -52,40 +59,25 @@ class SenderConfig {
 }
 
 //SmsSender
-class SmsSender implements NotificationSender {
-    private final AuditLog audit;
-
-    public SmsSender(AuditLog audit) {
-        this.audit = audit;
-    }
+class SmsSender extends NotificationSender {
+    public SmsSender(AuditLog audit) { super(audit); }
 
     @Override
-    public void send(Notification n) {
+    protected void doesSend(Notification n) {
         System.out.println("SMS -> to=" + n.phone + " body=" + n.body);
         audit.add("sms sent");
     }
 }
 
-// ValidateNotification
-class ValidateNotification {
-    public static void WhatsAppValidation(Notification n) {
-        if (n.phone == null || !n.phone.startsWith("+")) {
-            throw new IllegalArgumentException("phone must start with + and country code");
-        }
-    }
-}
-
 // WhatsAppSender
-class WhatsAppSender implements NotificationSender {
-
-    private final AuditLog audit;
-
-    public WhatsAppSender(AuditLog audit) {
-        this.audit = audit;
-    }
+class WhatsAppSender extends NotificationSender {
+    public WhatsAppSender(AuditLog audit) { super(audit); }
 
     @Override
-    public void send(Notification n) {
+    protected void doesSend(Notification n) {
+        if (n.phone == null || !n.phone.startsWith("+")) {
+            throw new RuntimeException("phone must start with + and country code");
+        }
         System.out.println("WA -> to=" + n.phone + " body=" + n.body);
         audit.add("wa sent");
     }
@@ -97,12 +89,7 @@ public class Demo06 {
         System.out.println("=== Notification Demo ===");
         AuditLog audit = new AuditLog();
 
-        Notification n = new Notification(
-                "Welcome",
-                "Hello and welcome to SST!",
-                "riya@sst.edu",
-                "9876543210"
-        );
+        Notification n = new Notification("Welcome", "Hello and welcome to SST!", "riya@sst.edu", "9876543210");
 
         NotificationSender email = new EmailSender(audit);
         NotificationSender sms = new SmsSender(audit);
@@ -110,9 +97,7 @@ public class Demo06 {
 
         email.send(n);
         sms.send(n);
-
         try {
-            ValidateNotification.WhatsAppValidation(n);
             wa.send(n);
         } catch (RuntimeException ex) {
             System.out.println("WA ERROR: " + ex.getMessage());
