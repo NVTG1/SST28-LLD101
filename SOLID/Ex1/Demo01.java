@@ -1,5 +1,3 @@
-package SOLID.Ex1;
-
 import java.util.*;
 
 // ConsoleInput
