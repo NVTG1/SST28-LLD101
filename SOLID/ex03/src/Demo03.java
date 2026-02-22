@@ -21,6 +21,7 @@ class EligibilityEngine {
         List<String> reasons = new ArrayList<>();
         String status = "ELIGIBLE";
 
+        // Checks for all the rules in the classes implementing the EligibilityRule interface
         for (EligibilityRule rule : rules) {
             if (!rule.check(s)) {
                 status = "NOT_ELIGIBLE";
@@ -34,7 +35,8 @@ class EligibilityEngine {
 
 // EligibilityEngineResult
 class EligibilityEngineResult {
-    public final String status;      // "ELIGIBLE" or "NOT_ELIGIBLE"
+    // Checks whether eleigible or not eligible 
+    public final String status;      
     public final List<String> reasons;
 
     public EligibilityEngineResult(String status, List<String> reasons) {
@@ -45,9 +47,9 @@ class EligibilityEngineResult {
 
 // EligibilityRule
 interface EligibilityRule {
-    // Returns true eligible
+    // Returns true if eligible
     boolean check(StudentProfile s);   
-    // Gives reason if false
+    // Gives reason if not eligible
     String reason();                    
 }
 
@@ -94,6 +96,7 @@ class ReportPrinter {
     }
 }
 
+// All classes implement the EligibilityRule interface to enforce their own rules.
 // RuleAttendance
 class RuleAttendance implements EligibilityRule{
     private final int minAttendance;
