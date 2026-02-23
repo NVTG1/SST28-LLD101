@@ -7,7 +7,7 @@ class ConsoleInput {
     }
 }
 
-// FakeDbInterface
+// FakeDbInterface: To avoid tight coupling between FakeDb and OnboardingService
 interface FakeDbInterface {
     void save(StudentRecord r);
     int count();
@@ -84,7 +84,6 @@ class ValidateStudent {
         String phone = kv.getOrDefault("phone", "");
         String program = kv.getOrDefault("program", "");
 
-        // validation inline, printing inline
         List<String> errors = new ArrayList<>();
         if (name.isBlank()) errors.add("name is required");
         if (email.isBlank() || !email.contains("@")) errors.add("email is invalid");
