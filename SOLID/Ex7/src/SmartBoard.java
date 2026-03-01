@@ -1,3 +1,4 @@
+// SmartBoard (Stretch Goal)
 public class SmartBoard implements PowerControl, ConnectInput {
     public void powerOn() {}
     public void powerOff() {}
