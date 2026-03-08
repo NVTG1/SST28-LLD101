@@ -21,6 +21,8 @@ public class ReportFile {
         this.classification = classification;
     }
 
+    // Every dispaly() call --> Loading from the disk
+    // Therefore, moved to RealReport and load it only when the object is created (Lazy Loading)
     public void display(User user) {
         String content = loadFromDisk();
         System.out.println("REPORT -> id=" + reportId

@@ -7,7 +7,8 @@ package com.example.reports;
  */
 public class ReportViewer {
 
-    public void open(ReportFile report, User user) {
+    // Report instead of ReportFile (No direct connection from concrete class but through an abstraction)
+    public void open(Report report, User user) {
         report.display(user);
     }
 }
