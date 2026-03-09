@@ -2,6 +2,7 @@ package com.example.payments;
 
 import java.util.Objects;
 
+// Wrapper Class for SafeCashClient that implements PaymentGateway
 public class SafeCashAdapter implements PaymentGateway {
 
     private final SafeCashClient client;
@@ -15,6 +16,7 @@ public class SafeCashAdapter implements PaymentGateway {
 
         Objects.requireNonNull(customerId, "customerId");
 
+        // Calling the original createPayment method
         SafeCashPayment payment =
                 client.createPayment(amountCents, customerId);
 

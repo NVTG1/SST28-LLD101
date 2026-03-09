@@ -2,7 +2,7 @@ package com.example.payments;
 
 import java.util.Objects;
 
-// Wrapper Class
+// Wrapper Class for FastPayClient to implement PaymentGateway
 
 public class FastPayAdapter implements PaymentGateway {
 
@@ -15,6 +15,7 @@ public class FastPayAdapter implements PaymentGateway {
     @Override
     public String charge(String customerId, int amountCents) {
         Objects.requireNonNull(customerId, "customerId");
+        // Returning the original FastPayClient method payNow
         return client.payNow(customerId, amountCents);
     }
 }

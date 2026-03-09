@@ -16,7 +16,6 @@ public class App {
 
         String id1 = svc.charge("fastpay", "cust-1", 1299);
         String id2 = svc.charge("safecash", "cust-2", 1299);
-
         System.out.println(id1);
         System.out.println(id2);
     }

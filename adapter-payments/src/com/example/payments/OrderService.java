@@ -11,6 +11,7 @@ public class OrderService {
     }
 
     // Smell: still switches; your refactor should remove this by ensuring map contains adapters.
+    // Somewhere we are switching if paymeent is FastPay or SafeCash
     public String charge(String provider, String customerId, int amountCents) {
         Objects.requireNonNull(provider, "provider");
         PaymentGateway gw = gateways.get(provider);
