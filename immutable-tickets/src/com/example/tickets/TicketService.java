@@ -1,8 +1,4 @@
 package com.example.tickets;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Service layer that creates tickets.
  *
@@ -29,7 +25,7 @@ public class TicketService {
                 .build(); // Validation will be done here 
     }
 
-    // Updation happens by creating a new object
+    // Updation happens by creating a new object so that it doesn't effect immutability
     // Escalate this ticket to Critical
     public IncidentTicket escalateToCritical(IncidentTicket t) {
         return t.toBuilder()
