@@ -10,7 +10,7 @@ import java.util.Properties;
  * CURRENT STATE (BROKEN ON PURPOSE):
  * - Uses 'new MetricsRegistry()' instead of the singleton.
  *
- *  TODO (student):
+ * TODO (student):
  *  - Use MetricsRegistry.getInstance() and remove all direct instantiation.
  */
 public class MetricsLoader {
@@ -22,6 +22,10 @@ public class MetricsLoader {
         }
 
         // BROKEN: should not create a new instance
+        // This creates completely new instance
+        // MetricsRegistry registry = new MetricsRegistry();
+
+        // Using a public method of MetricsRegistry to get the instance
         MetricsRegistry registry = MetricsRegistry.getInstance();
 
         for (String key : props.stringPropertyNames()) {

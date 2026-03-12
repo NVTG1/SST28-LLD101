@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class ConcurrencyCheck {
 
     public static void main(String[] args) throws Exception {
+        // To check thread safety, it launches 80 threads 
         int threads = 80;
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 

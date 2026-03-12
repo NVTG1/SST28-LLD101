@@ -1,6 +1,5 @@
 package com.example.metrics;
 
-import java.io.ObjectStreamException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
@@ -21,38 +20,41 @@ import java.util.Map;
  *  2) Block reflection-based multiple construction
  *  3) Preserve singleton on serialization (readResolve)
  */
+
+// Because class is implementing Serializable, deserialization creates a new object
 public class MetricsRegistry implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    // flag set to  false to block reflection
-    private static boolean constructed = false;
-
-    // private static MetricsRegistry INSTANCE; // BROKEN: not volatile, not thread-safe
-
+    // Made volatile for system write to RAM everytime
+    private static volatile MetricsRegistry INSTANCE; // BROKEN: not volatile, not thread-safe
     private final Map<String, Long> counters = new HashMap<>();
 
-    // BROKEN: should be private and should prevent second construction// Make private to stop outside class from creating objects
-    // Make private to stop outside class from creating objects
-
-    // Instance created only when needed
+    // BROKEN: should be private and should prevent second construction
+    // Anyone can create an instance
+    // Made the constructor from public -> private
     private MetricsRegistry() {
         // intentionally empty
-        if (constructed) {
-            throw new RuntimeException("Use getInstance() to get MetricRegistry");
-        }
-        constructed = true;
-    }
 
-     private static class Holder {
-        private static final MetricsRegistry INSTANCE = new MetricsRegistry();
+        // To block the reflection attack
+        if (INSTANCE != null) {
+            throw new RuntimeException("Use getInstance() instead");
+        }
     }
 
     // BROKEN: racy lazy init; two threads can create two instances
-    
+    // Not thread-safe
+    // Lazy Loading to make thread-safe
     public static MetricsRegistry getInstance() {
-        return Holder.INSTANCE;
+        if (INSTANCE == null) {
+            synchronized (MetricsRegistry.class){
+                if(INSTANCE == null){
+                    INSTANCE = new MetricsRegistry();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     public synchronized void setCount(String key, long value) {
@@ -67,14 +69,10 @@ public class MetricsRegistry implements Serializable {
         return counters.getOrDefault(key, 0L);
     }
 
+    // To preserve singleton during deserialization so that no new object is created
     public synchronized Map<String, Long> getAll() {
         return Collections.unmodifiableMap(new HashMap<>(counters));
     }
 
     // TODO: implement readResolve() to preserve singleton on deserialization
-
-    // Serialization protection
-    private Object readResolve() throws ObjectStreamException {
-        return getInstance();
-    }
 }
