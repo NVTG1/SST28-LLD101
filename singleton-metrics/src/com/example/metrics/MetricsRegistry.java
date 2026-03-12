@@ -38,6 +38,7 @@ public class MetricsRegistry implements Serializable {
         // intentionally empty
 
         // To block the reflection attack
+        // If reflection tries to create another object, the constructor only will throw an exception
         if (INSTANCE != null) {
             throw new RuntimeException("Use getInstance() instead");
         }
@@ -69,10 +70,17 @@ public class MetricsRegistry implements Serializable {
         return counters.getOrDefault(key, 0L);
     }
 
-    // To preserve singleton during deserialization so that no new object is created
     public synchronized Map<String, Long> getAll() {
         return Collections.unmodifiableMap(new HashMap<>(counters));
     }
 
     // TODO: implement readResolve() to preserve singleton on deserialization
+    // To preserve singleton during deserialization so that no new object is created
+
+    // Serial is an annotation that provides readResolve()
+    // readResolve() replaces deserialized object with the instance created
+    @Serial
+    private Object readResolve(){
+        return getInstance();
+    }
 }
