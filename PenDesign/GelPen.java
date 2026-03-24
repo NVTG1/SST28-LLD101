@@ -2,11 +2,8 @@ package PenDesign;
 
 class GelPen extends Pen {
 
-    public GelPen(Refill refill) {
-        super(refill,
-              new CapMechOpen(),
-              new CapMechClose(),
-              new PenRefill());
+    public GelPen(Refill refill, StartStrategy startStrategy, CloseStrategy closeStrategy, RefillStrategy refillStrategy) {
+        super(refill, startStrategy, closeStrategy, refillStrategy);
     }
 
     @Override

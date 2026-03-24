@@ -7,27 +7,25 @@ public class Main {
 
         Scanner scnr = new Scanner(System.in);
 
-        System.out.println("Enter Pen Type (ball / gel): ");
-        String type = scnr.nextLine().toLowerCase();
+        System.out.print("Enter Pen Type (ball / gel): ");
+        String penType = scnr.nextLine();
+
+        System.out.print("Enter Mechanism (click / cap): ");
+        String mechanismType = scnr.nextLine();
 
         System.out.print("Enter ink color: ");
         String color = scnr.nextLine();
 
-        System.out.println("Enter the text you want to write: ");
-        String text = scnr.next();
-
         System.out.print("Enter ink level: ");
         int ink = scnr.nextInt();
+        scnr.nextLine();
+
+        System.out.print("Enter text to write: ");
+        String text = scnr.nextLine();
 
         Refill refill = new Refill(color, ink);
 
-        Pen pen;
-
-        if (type.equals("ball")) {
-            pen = new BallPen(refill);
-        } else {
-            pen = new GelPen(refill);
-        }
+        Pen pen = PenFactory.createPen(penType, mechanismType, refill);
 
         pen.start();
         pen.write(text);

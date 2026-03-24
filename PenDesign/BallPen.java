@@ -1,8 +1,9 @@
 package PenDesign;
 
-public class BallPen extends Pen{
-    public BallPen(Refill refill){
-        super(refill, new ClickMechOpen(), new ClickMechClose(), new PenRefill());
+class BallPen extends Pen {
+
+    public BallPen(Refill refill, StartStrategy startStrategy, CloseStrategy closeStrategy, RefillStrategy refillStrategy) {
+        super(refill, startStrategy, closeStrategy, refillStrategy);
     }
 
     @Override

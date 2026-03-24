@@ -8,11 +8,7 @@ abstract class Pen {
     protected CloseStrategy closeStrategy;
     protected RefillStrategy refillStrategy;
 
-    public Pen(Refill refill,
-               StartStrategy startStrategy,
-               CloseStrategy closeStrategy,
-               RefillStrategy refillStrategy) {
-
+    public Pen(Refill refill, StartStrategy startStrategy, CloseStrategy closeStrategy, RefillStrategy refillStrategy) {
         this.refill = refill;
         this.startStrategy = startStrategy;
         this.closeStrategy = closeStrategy;
