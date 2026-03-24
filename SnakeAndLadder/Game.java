@@ -46,7 +46,7 @@ public class Game {
                 current.setPosition(newPos);
             }
 
-            System.out.println(current.getName() + "is at " + current.getPosition());
+            System.out.println(current.getName() + " is at " + current.getPosition());
 
             if(current.getPosition() == board.getWinningCell()){
                 System.out.println("Congratulations! " + current.getName() + " Wins");
@@ -62,3 +62,4 @@ public class Game {
     }
    }
 }
+
