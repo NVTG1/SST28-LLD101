@@ -16,4 +16,12 @@ public class Screen {
     public List<Seat> getSeats() {
         return seats;
     }
+
+    public int getId(){
+        return id;
+    }
+
+    public String getName(){
+        return name;
+    }
 }

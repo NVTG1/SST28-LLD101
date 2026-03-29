@@ -20,4 +20,16 @@ public class Payment {
     public int getId(){
         return id;
     }
+
+    public Booking getBooking(){
+        return booking;
+    }
+
+    public PaymentMode getPaymentMode(){
+        return mode;
+    }
+
+    public PaymentStatus getPaymentStatus(){
+        return status;
+    }
 }

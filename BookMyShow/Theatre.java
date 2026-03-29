@@ -18,4 +18,16 @@ public class Theatre {
     public List<Screen> getScreens() {
         return screens;
     }
+
+    public int getId(){
+        return id;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public String getCity(){
+        return city;
+    }
 }

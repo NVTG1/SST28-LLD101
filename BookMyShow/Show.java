@@ -27,4 +27,16 @@ public class Show {
     public Screen getScreen() {
         return screen;
     }
+
+    public int getId(){
+        return id;
+    }
+
+    public Movie getMovie(){
+        return movie;
+    }
+
+    public Date getDate(){
+        return startTime;
+    }
 }

@@ -13,6 +13,19 @@ public class Seat {
         this.type = type;
     }
 
-    public int getId() { return id; }
-    public SeatType getType() { return type; }
+    public int getId(){ 
+        return id; 
+    }
+
+    public SeatType getType(){ 
+        return type; 
+    }
+
+    public int getRow(){ 
+        return row; 
+    }
+    
+    public int getCol(){
+        return col;
+    }
 }
