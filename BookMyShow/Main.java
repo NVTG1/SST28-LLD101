@@ -5,12 +5,12 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 
-        Seat s1 = new Seat(1, 1, 1, SeatType.GOLD);
-        Seat s2 = new Seat(2, 1, 2, SeatType.SILVER);
+        Seat s1 = new Seat(1, 1, 1, SeatType.PLATINUM);
+        Seat s2 = new Seat(2, 1, 2, SeatType.GOLD);
 
         Screen screen = new Screen(1, "Screen 1", Arrays.asList(s1, s2));
 
-        Movie movie = new Movie(1, "Inception", 120, "Sci-Fi");
+        Movie movie = new Movie(1, "Dhurandhar", 120, "Action-Thriller");
 
         Show show = new Show(1, movie, screen, new Date());
 
@@ -28,6 +28,6 @@ public class Main {
             bookingService.confirmBooking(booking);
         }
 
-        System.out.println("Booking Confirmed!");
+        System.out.println("Ticket booked for " + movie.getName());
     }
 }
