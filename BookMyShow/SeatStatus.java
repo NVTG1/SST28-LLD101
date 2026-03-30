@@ -1,5 +1,7 @@
 package BookMyShow;
 
 public enum SeatStatus {
-    AVAILABLE, BOOKED, BLOCKED
+    AVAILABLE, 
+    LOCKED,
+    BOOKED, 
 }

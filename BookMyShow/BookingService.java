@@ -1,43 +1,92 @@
 package BookMyShow;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
-public class BookingService {
+class BookingService {
 
-    private PricingStrategy pricingStrategy;
+    private static final int LOCK_TIMEOUT = 5;
 
-    public BookingService(PricingStrategy pricingStrategy) {
-        this.pricingStrategy = pricingStrategy;
-    }
+    public boolean lockSeats(User user, List<ShowSeat> seats) {
 
-    public Booking createBooking(User user, Show show, List<Seat> seats) {
-
-        for (Seat seat : seats) {
-            if (show.getSeatStatus().get(seat.getId()) != SeatStatus.AVAILABLE) {
-                throw new RuntimeException("Seat not available");
+        synchronized (this) {
+            for (ShowSeat seat : seats) {
+                if (seat.status != SeatStatus.AVAILABLE) {
+                    return false;
+                }
             }
+
+            for (ShowSeat seat : seats) {
+                seat.status = SeatStatus.LOCKED;
+                seat.lockedAt = LocalDateTime.now();
+            }
+
+            return true;
         }
-
-        for (Seat seat : seats) {
-            show.getSeatStatus().put(seat.getId(), SeatStatus.BLOCKED);
-        }
-
-        Booking booking = new Booking(new Random().nextInt(), user, show, seats);
-
-        double total = 0;
-        for (Seat seat : seats) {
-            total += pricingStrategy.calculatePrice(seat);
-        }
-
-        booking.setTotalPrice(total);
-
-        return booking;
     }
 
-    public void confirmBooking(Booking booking) {
-        for (Seat seat : booking.getSeats()) {
-            booking.getShow().getSeatStatus().put(seat.getId(), SeatStatus.BOOKED);
+    public boolean confirmBooking(Booking booking,
+                                  List<ShowSeat> seats,
+                                  PaymentStrategy strategy) {
+
+        synchronized (this) {
+
+            double total = 0;
+
+            for (ShowSeat seat : seats) {
+
+                if (seat.status != SeatStatus.LOCKED ||
+                    isLockExpired(seat)) {
+                    return false;
+                }
+
+                double price = calculatePrice(seat, booking.show);
+                total += price;
+            }
+
+            for (ShowSeat seat : seats) {
+                seat.status = SeatStatus.BOOKED;
+            }
+
+            strategy.pay(total);
+
+            Payment payment = new Payment();
+            payment.amount = total;
+            payment.status = "SUCCESS";
+
+            booking.payment = payment;
+            booking.seats = seats;
+
+            System.out.println("Booking Confirmed!");
+
+            return true;
         }
-        booking.setStatus(BookingStatus.CONFIRMED);
+    }
+
+    private double calculatePrice(ShowSeat seat, Show show) {
+
+        double base = seat.seat.basePrice;
+
+        if (seat.seat.type == SeatType.GOLD) base *= 1.5;
+        if (seat.seat.type == SeatType.PLATINUM) base *= 2;
+
+        int total = show.seats.size();
+        int booked = 0;
+
+        for (ShowSeat s : show.seats) {
+            if (s.status == SeatStatus.BOOKED) booked++;
+        }
+
+        double occupancy = (double) booked / total;
+
+        if (occupancy > 0.5) base *= 1.2;
+        if (occupancy > 0.8) base *= 1.5;
+
+        return base;
+    }
+
+    private boolean isLockExpired(ShowSeat seat) {
+        return seat.lockedAt.plusMinutes(LOCK_TIMEOUT)
+                .isBefore(LocalDateTime.now());
     }
 }

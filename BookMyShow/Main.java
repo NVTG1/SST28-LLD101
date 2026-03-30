@@ -1,33 +1,101 @@
 package BookMyShow;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Main {
+
     public static void main(String[] args) {
 
-        Seat s1 = new Seat(1, 1, 1, SeatType.PLATINUM);
-        Seat s2 = new Seat(2, 1, 2, SeatType.GOLD);
+        TheaterService theaterService = new TheaterService();
+        MovieService movieService = new MovieService();
+        ShowService showService = new ShowService();
+        BookingService bookingService = new BookingService();
 
-        Screen screen = new Screen(1, "Screen 1", Arrays.asList(s1, s2));
+        User admin = new User();
+        admin.userId = "U1";
+        admin.role = UserRole.ADMIN;
 
-        Movie movie = new Movie(1, "Dhurandhar", 120, "Action-Thriller");
+        User customer = new User();
+        customer.userId = "U2";
+        customer.role = UserRole.CUSTOMER;
 
-        Show show = new Show(1, movie, screen, new Date());
+        Theater theater = new Theater();
+        theater.theaterId = "T1";
+        theater.name = "PVR";
+        theater.city = "Bangalore";
 
-        User user = new User(1, "User1");
+        theaterService.addTheater(theater, admin);
 
-        BookingService bookingService = new BookingService(new DefaultPricingStrategy());
+        Screen screen = new Screen();
+        screen.screenId = "S1";
 
-        Booking booking = bookingService.createBooking(user, show, Arrays.asList(s1, s2));
+        for (int i = 1; i <= 10; i++) {
+            Seat seat = new Seat();
+            seat.seatId = "Seat-" + i;
+            seat.basePrice = 200;
 
-        Payment payment = new Payment(1, booking, PaymentMode.UPI);
+            if (i <= 3) seat.type = SeatType.SILVER;
+            else if (i <= 7) seat.type = SeatType.GOLD;
+            else seat.type = SeatType.PLATINUM;
 
-        PaymentService paymentService = new PaymentService();
-
-        if (paymentService.processPayment(payment)) {
-            bookingService.confirmBooking(booking);
+            screen.seats.add(seat);
         }
 
-        System.out.println("Ticket booked for " + movie.getName());
+        System.out.println("Seats initialized for Screen: " + screen.screenId);
+
+        theaterService.addScreen("T1", screen, admin);
+
+        Movie movie = new Movie();
+        movie.movieId = "M1";
+        movie.name = "Inception";
+        movie.duration = 120;
+
+        movieService.addMovie(movie, admin);
+
+        Show show = new Show();
+        show.showId = "SH1";
+        show.movie = movie;
+        show.screen = screen;
+        show.startTime = LocalDateTime.now();
+        show.endTime = show.startTime.plusMinutes(movie.duration);
+
+        for (Seat seat : screen.seats) {
+            ShowSeat ss = new ShowSeat();
+            ss.seat = seat;
+            ss.seatId = seat.seatId;
+            ss.status = SeatStatus.AVAILABLE;
+            show.seats.add(ss);
+        }
+
+        showService.addShow(show);
+
+        List<ShowSeat> selectedSeats = new ArrayList<>();
+        selectedSeats.add(show.seats.get(0));
+        selectedSeats.add(show.seats.get(5));
+        selectedSeats.add(show.seats.get(9));
+
+        Booking booking = new Booking();
+        booking.bookingId = "B1";
+        booking.user = customer;
+        booking.show = show;
+
+        boolean locked = bookingService.lockSeats(customer, selectedSeats);
+
+        if (!locked) {
+            System.out.println("Seats not available!");
+            return;
+        }
+
+        boolean success = bookingService.confirmBooking(
+                booking,
+                selectedSeats,
+                new UPIPayment()
+        );
+
+        if (success) {
+            System.out.println("\n✅ Booking SUCCESS");
+            System.out.println("Total Paid: " + booking.payment.amount);
+        }
     }
 }
